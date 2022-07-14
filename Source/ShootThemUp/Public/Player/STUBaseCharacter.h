@@ -27,7 +27,16 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
     USpringArmComponent* SpringArmComponent;
-    
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    float CameraMinDistance = 10.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    float CameraMaxDistance = 300.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    float CameraDistanceSensitivity;
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -38,4 +47,6 @@ public:
 private:
     void MoveForward(float Axis);
     void MoveRight(float Axis);
+
+    void MoveCameraAway(float Axis);
 };

@@ -4,6 +4,8 @@
 #include "Player/STUBaseCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -26,6 +28,7 @@ void ASTUBaseCharacter::BeginPlay()
     Super::BeginPlay();
 
     CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
+    DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed; 
 }
 
 // Called every frame
@@ -46,10 +49,18 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAxis("MoveCameraAway", this, &ASTUBaseCharacter::MoveCameraAway);
 
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
+    PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
+    PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
+}
+
+bool ASTUBaseCharacter::IsRunning() const
+{
+    return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
 }
 
 void ASTUBaseCharacter::MoveForward(float Axis)
 {
+    IsMovingForward = Axis > 0.0f;
     AddMovementInput(GetActorForwardVector(), Axis);
 }
 
@@ -67,4 +78,19 @@ void ASTUBaseCharacter::MoveCameraAway(float Axis)
     {
         SpringArmComponent->TargetArmLength = NewSpringArmLength;
     }
+}
+
+void ASTUBaseCharacter::StartRunning()
+{
+    WantsToRun = true;
+    if (IsRunning())
+    {
+        GetCharacterMovement()->MaxWalkSpeed = MaxRunningSpeed;
+    }
+}
+
+void ASTUBaseCharacter::StopRunning()
+{
+    WantsToRun = false;
+    GetCharacterMovement()->MaxWalkSpeed = DefaultMaxSpeed;
 }

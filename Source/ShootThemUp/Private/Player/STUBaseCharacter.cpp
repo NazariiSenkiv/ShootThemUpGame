@@ -61,9 +61,6 @@ void ASTUBaseCharacter::MoveCameraAway(float Axis)
     float NewSpringArmLength = SpringArmComponent->TargetArmLength +
                                Axis * CameraDistanceSensitivity * GetWorld()->DeltaTimeSeconds;
 
-    const FString DebugStr = "NewSpringArmLength = " + FString::SanitizeFloat(NewSpringArmLength);
-    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Yellow, DebugStr);
-
     if (NewSpringArmLength < CameraMaxDistance && NewSpringArmLength > CameraMinDistance)
     {
         SpringArmComponent->TargetArmLength = NewSpringArmLength;

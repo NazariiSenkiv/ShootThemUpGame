@@ -54,6 +54,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool IsRunning() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    float GetMovementAngle() const;
     
 private:
     void MoveForward(float Axis);

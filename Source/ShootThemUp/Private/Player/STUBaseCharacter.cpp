@@ -58,6 +58,18 @@ bool ASTUBaseCharacter::IsRunning() const
     return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
 }
 
+float ASTUBaseCharacter::GetMovementAngle() const
+{
+    if (GetVelocity().IsZero()) return 0.0f;
+
+    const auto VelocityNormal = GetVelocity().GetSafeNormal();
+    const auto AngleRad = FMath::Acos(FVector::DotProduct(GetActorForwardVector(), VelocityNormal));
+    const auto AngleDeg = FMath::RadiansToDegrees(AngleRad);
+    const auto CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VelocityNormal);
+
+    return CrossProduct.IsZero() ? AngleDeg : AngleDeg * FMath::Sign(CrossProduct.Z); 
+}
+
 void ASTUBaseCharacter::MoveForward(float Axis)
 {
     IsMovingForward = Axis > 0.0f;

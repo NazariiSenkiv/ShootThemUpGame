@@ -4,6 +4,8 @@
 #include "Player/STUBaseCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/STUHealthComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -20,6 +22,11 @@ ASTUBaseCharacter::ASTUBaseCharacter()
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
+
+    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
+    HealthTextComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -27,6 +34,9 @@ void ASTUBaseCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    check(HealthComponent);
+    check(HealthTextComponent);
+    
     CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
     DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed; 
 }
@@ -35,6 +45,9 @@ void ASTUBaseCharacter::BeginPlay()
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    const float CurrentHealth = HealthComponent->GetHealth();
+    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), CurrentHealth)));
 }
 
 // Called to bind functionality to input

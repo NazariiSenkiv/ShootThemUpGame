@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class USTUHealthComponent;
 class UTextRenderComponent;
+class UAnimMontage;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -52,6 +53,9 @@ protected:
     
     float DefaultMaxSpeed;
     bool IsMovingForward = false;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UAnimMontage* DeathAnimMontage;
     
 public:
     // Called every frame
@@ -74,4 +78,8 @@ private:
 
     void StartRunning();
     void StopRunning();
+
+    void DeathHandle();
+
+    void HealthChangeHandle(float Health);
 };

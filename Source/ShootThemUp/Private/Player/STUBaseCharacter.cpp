@@ -10,6 +10,8 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogSTUCharacter, All, All);
+
 // Sets default values
 ASTUBaseCharacter::ASTUBaseCharacter()
 {
@@ -27,6 +29,8 @@ ASTUBaseCharacter::ASTUBaseCharacter()
 
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
+
+    HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::HealthChangeHandle);
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +40,8 @@ void ASTUBaseCharacter::BeginPlay()
 
     check(HealthComponent);
     check(HealthTextComponent);
+
+    HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::DeathHandle);
     
     CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
     DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed; 
@@ -45,9 +51,6 @@ void ASTUBaseCharacter::BeginPlay()
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-    const float CurrentHealth = HealthComponent->GetHealth();
-    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), CurrentHealth)));
 }
 
 // Called to bind functionality to input
@@ -118,4 +121,21 @@ void ASTUBaseCharacter::StopRunning()
 {
     WantsToRun = false;
     GetCharacterMovement()->MaxWalkSpeed = DefaultMaxSpeed;
+}
+
+void ASTUBaseCharacter::DeathHandle()
+{
+    UE_LOG(LogSTUCharacter, Display, TEXT("Dead"));
+
+    PlayAnimMontage(DeathAnimMontage);
+
+    GetCharacterMovement()->DisableMovement();
+    bUseControllerRotationYaw = false;
+
+    SetLifeSpan(5.0f);
+}
+
+void ASTUBaseCharacter::HealthChangeHandle(float Health)
+{
+    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 }

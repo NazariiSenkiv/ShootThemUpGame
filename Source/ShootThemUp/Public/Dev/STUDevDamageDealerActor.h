@@ -34,6 +34,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bDoFullDamage = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UDamageType> DamageType;
+    
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUCharacter, All, All);
 
@@ -133,6 +134,11 @@ void ASTUBaseCharacter::DeathHandle()
     bUseControllerRotationYaw = false;
 
     SetLifeSpan(5.0f);
+
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
 }
 
 void ASTUBaseCharacter::HealthChangeHandle(float Health)

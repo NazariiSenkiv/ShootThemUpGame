@@ -60,6 +60,7 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+    check(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
@@ -136,7 +137,7 @@ void ASTUBaseCharacter::OnDeathHandle()
     GetCharacterMovement()->DisableMovement();
     bUseControllerRotationYaw = false;
 
-    SetLifeSpan(5.0f);
+    SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)
     {
@@ -151,7 +152,7 @@ void ASTUBaseCharacter::OnHealthChangedHandle(float Health)
 
 void ASTUBaseCharacter::OnLandedHandle(const FHitResult& Hit)
 {
-    const float FallVelocity = -GetCharacterMovement()->Velocity.Z;
+    const float FallVelocity = -GetVelocity().Z;
 
     if (FallVelocity < FallDamageVelocityRange.X)
         return;

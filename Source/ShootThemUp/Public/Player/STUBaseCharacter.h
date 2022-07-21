@@ -54,10 +54,13 @@ protected:
     float DefaultMaxSpeed;
     bool IsMovingForward = false;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Movement")
+    UPROPERTY(EditDefaultsOnly, Category = "Death")
+    float LifeSpanOnDeath = 5.0f;
+    
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D FallDamageVelocityRange{900.0, 1800.0};
 
-    UPROPERTY(EditDefaultsOnly, Category = "Movement")
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D FallDamageRange{10.0, 100.0};
 
     UPROPERTY(EditDefaultsOnly, Category = "Animation")

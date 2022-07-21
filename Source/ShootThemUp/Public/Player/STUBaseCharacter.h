@@ -36,7 +36,7 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
     UTextRenderComponent* HealthTextComponent;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
     float CameraMinDistance = 10.0f;
 
@@ -45,18 +45,24 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
     float CameraDistanceSensitivity;
-    
+
     bool WantsToRun = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float MaxRunningSpeed = 1000.0f;
-    
+
     float DefaultMaxSpeed;
     bool IsMovingForward = false;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Movement")
+    FVector2D FallDamageVelocityRange{900.0, 1800.0};
+
+    UPROPERTY(EditDefaultsOnly, Category = "Movement")
+    FVector2D FallDamageRange{10.0, 100.0};
+
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
-    
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -69,7 +75,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementAngle() const;
-    
+
 private:
     void MoveForward(float Axis);
     void MoveRight(float Axis);
@@ -79,7 +85,10 @@ private:
     void StartRunning();
     void StopRunning();
 
-    void DeathHandle();
+    void OnDeathHandle();
 
-    void HealthChangeHandle(float Health);
+    void OnHealthChangedHandle(float Health);
+
+    UFUNCTION()
+    void OnLandedHandle(const FHitResult& Hit);
 };

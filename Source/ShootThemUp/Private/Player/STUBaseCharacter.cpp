@@ -31,7 +31,7 @@ ASTUBaseCharacter::ASTUBaseCharacter()
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
 
-    HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::HealthChangeHandle);
+    HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChangedHandle);
 }
 
 // Called when the game starts or when spawned
@@ -42,10 +42,12 @@ void ASTUBaseCharacter::BeginPlay()
     check(HealthComponent);
     check(HealthTextComponent);
 
-    HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::DeathHandle);
-    
+    HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeathHandle);
+
     CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
-    DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed; 
+    DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
+    LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnLandedHandle);
 }
 
 // Called every frame
@@ -77,14 +79,15 @@ bool ASTUBaseCharacter::IsRunning() const
 
 float ASTUBaseCharacter::GetMovementAngle() const
 {
-    if (GetVelocity().IsZero()) return 0.0f;
+    if (GetVelocity().IsZero())
+        return 0.0f;
 
     const auto VelocityNormal = GetVelocity().GetSafeNormal();
     const auto AngleRad = FMath::Acos(FVector::DotProduct(GetActorForwardVector(), VelocityNormal));
     const auto AngleDeg = FMath::RadiansToDegrees(AngleRad);
     const auto CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VelocityNormal);
 
-    return CrossProduct.IsZero() ? AngleDeg : AngleDeg * FMath::Sign(CrossProduct.Z); 
+    return CrossProduct.IsZero() ? AngleDeg : AngleDeg * FMath::Sign(CrossProduct.Z);
 }
 
 void ASTUBaseCharacter::MoveForward(float Axis)
@@ -124,7 +127,7 @@ void ASTUBaseCharacter::StopRunning()
     GetCharacterMovement()->MaxWalkSpeed = DefaultMaxSpeed;
 }
 
-void ASTUBaseCharacter::DeathHandle()
+void ASTUBaseCharacter::OnDeathHandle()
 {
     UE_LOG(LogSTUCharacter, Display, TEXT("Dead"));
 
@@ -141,7 +144,20 @@ void ASTUBaseCharacter::DeathHandle()
     }
 }
 
-void ASTUBaseCharacter::HealthChangeHandle(float Health)
+void ASTUBaseCharacter::OnHealthChangedHandle(float Health)
 {
     HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+}
+
+void ASTUBaseCharacter::OnLandedHandle(const FHitResult& Hit)
+{
+    const float FallVelocity = -GetCharacterMovement()->Velocity.Z;
+
+    if (FallVelocity < FallDamageVelocityRange.X)
+        return;
+
+    const float FallDamage = FMath::GetMappedRangeValueClamped(FallDamageVelocityRange,
+        FallDamageRange, FallVelocity);
+
+    TakeDamage(FallDamage, FDamageEvent{}, nullptr, nullptr);
 }

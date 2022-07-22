@@ -66,6 +66,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    TSubclassOf<class ASTUBaseWeapon> WeaponClass;
+    
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -94,4 +97,6 @@ private:
 
     UFUNCTION()
     void OnLandedHandle(const FHitResult& Hit);
+
+    void CreateWeapon();
 };

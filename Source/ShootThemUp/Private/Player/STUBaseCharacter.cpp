@@ -10,6 +10,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "Weapon/STUBaseWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUCharacter, All, All);
 
@@ -48,6 +49,8 @@ void ASTUBaseCharacter::BeginPlay()
     DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnLandedHandle);
+
+    CreateWeapon();
 }
 
 // Called every frame
@@ -161,4 +164,21 @@ void ASTUBaseCharacter::OnLandedHandle(const FHitResult& Hit)
         FallDamageRange, FallVelocity);
 
     TakeDamage(FallDamage, FDamageEvent{}, nullptr, nullptr);
+}
+
+void ASTUBaseCharacter::CreateWeapon()
+{
+    UWorld* World = GetWorld();
+
+    if (!World)
+        return;
+
+    const auto Weapon = World->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+
+    if (Weapon)
+    {
+        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
+    }
+    
 }

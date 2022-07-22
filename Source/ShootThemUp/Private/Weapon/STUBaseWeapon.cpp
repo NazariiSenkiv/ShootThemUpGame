@@ -4,6 +4,8 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
+
 // Sets default values
 ASTUBaseWeapon::ASTUBaseWeapon()
 {
@@ -12,6 +14,11 @@ ASTUBaseWeapon::ASTUBaseWeapon()
 
     WeaponMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
     SetRootComponent(WeaponMeshComponent);
+}
+
+void ASTUBaseWeapon::Fire()
+{
+    UE_LOG(LogBaseWeapon, Display, TEXT("Piv-piv"));
 }
 
 // Called when the game starts or when spawned

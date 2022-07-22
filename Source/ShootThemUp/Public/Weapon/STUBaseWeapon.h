@@ -7,6 +7,7 @@
 #include "STUBaseWeapon.generated.h"
 
 class USkeletalMeshComponent;
+class ASTUBaseCharacter;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
@@ -16,6 +17,8 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASTUBaseWeapon();
+
+    virtual void Fire();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")

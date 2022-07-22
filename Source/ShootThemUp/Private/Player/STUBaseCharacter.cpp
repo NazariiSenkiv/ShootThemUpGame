@@ -2,15 +2,15 @@
 
 
 #include "Player/STUBaseCharacter.h"
+
+#include "STUWeaponComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-#include "Weapon/STUBaseWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUCharacter, All, All);
 
@@ -35,6 +35,8 @@ ASTUBaseCharacter::ASTUBaseCharacter()
     HealthTextComponent->SetOwnerNoSee(true);
 
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChangedHandle);
+
+    WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 }
 
 // Called when the game starts or when spawned
@@ -51,8 +53,6 @@ void ASTUBaseCharacter::BeginPlay()
     DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnLandedHandle);
-
-    CreateWeapon();
 }
 
 // Called every frame
@@ -66,6 +66,7 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
     check(PlayerInputComponent);
+    check(WeaponComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
@@ -76,6 +77,7 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Fire);
 }
 
 bool ASTUBaseCharacter::IsRunning() const
@@ -166,21 +168,4 @@ void ASTUBaseCharacter::OnLandedHandle(const FHitResult& Hit)
         FallDamageRange, FallVelocity);
 
     TakeDamage(FallDamage, FDamageEvent{}, nullptr, nullptr);
-}
-
-void ASTUBaseCharacter::CreateWeapon()
-{
-    UWorld* World = GetWorld();
-
-    if (!World)
-        return;
-
-    const auto Weapon = World->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-
-    if (Weapon)
-    {
-        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
-    }
-    
 }

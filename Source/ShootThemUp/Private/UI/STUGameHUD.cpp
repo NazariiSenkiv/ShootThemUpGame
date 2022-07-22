@@ -19,7 +19,7 @@ void ASTUGameHUD::DrawCrossHair()
     FLinearColor LineColor = FLinearColor::Green;
     float LineThickness = 1.0;
     
-    float SquareHalfLength = LineHalfLength*FMath::Sqrt(2);
+    float SquareHalfLength = LineHalfLength*FMath::Sqrt(2.0);
     
     DrawLine(ScreenCenter.X - SquareHalfLength, ScreenCenter.Y - SquareHalfLength,
         ScreenCenter.X + SquareHalfLength, ScreenCenter.Y + SquareHalfLength, LineColor,

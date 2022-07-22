@@ -11,6 +11,7 @@ class USpringArmComponent;
 class USTUHealthComponent;
 class UTextRenderComponent;
 class UAnimMontage;
+class USTUWeaponComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -37,6 +38,9 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Health")
     UTextRenderComponent* HealthTextComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
+    USTUWeaponComponent* WeaponComponent;
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
     float CameraMinDistance = 10.0f;
 
@@ -65,9 +69,6 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TSubclassOf<class ASTUBaseWeapon> WeaponClass;
     
 public:
     // Called every frame
@@ -97,6 +98,4 @@ private:
 
     UFUNCTION()
     void OnLandedHandle(const FHitResult& Hit);
-
-    void CreateWeapon();
 };

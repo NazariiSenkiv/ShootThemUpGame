@@ -23,7 +23,16 @@ public:
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
     USkeletalMeshComponent* WeaponMeshComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Shoot")
+    FName MuzzleSocketName = "MuzzleSocket";
+
+    UPROPERTY(EditDefaultsOnly, Category = "Shoot")
+    float TraceLength = 2000.0f;
     
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+    void MakeShot();
 };

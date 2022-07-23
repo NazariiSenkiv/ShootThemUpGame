@@ -53,22 +53,28 @@ void ASTUBaseWeapon::MakeShot()
     const FVector MuzzleLocation = SocketTransform.GetLocation();
     const FVector MuzzleDirection = SocketTransform.GetRotation().GetForwardVector();
     const FVector TraceEnd = ViewLocation + ViewRotation.Vector() * TraceLength;
-    
+
     FHitResult HitResult;
     World->LineTraceSingleByChannel(HitResult, ViewLocation, TraceEnd, ECollisionChannel::ECC_Visibility);
-    
-    const FVector ShootDirection = HitResult.bBlockingHit ?
-        (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal()
-            : (TraceEnd - MuzzleLocation).GetSafeNormal();
+
+    const FVector ShootDirection = HitResult.bBlockingHit
+                                       ? (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal()
+                                       : (TraceEnd - MuzzleLocation).GetSafeNormal();
 
     const float VectorProjection = FVector::DotProduct(MuzzleDirection, ShootDirection);
-    
+
     if (HitResult.bBlockingHit && VectorProjection > 0.0)
     {
         DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::Red,
             false, 5.0f, 0, 3.0f);
         DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 24, FColor::Yellow,
             false, 5.0f, 0, 3.0f);
+
+        if (!GEngine)
+            return;
+
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Emerald,
+            FString::Printf(TEXT("%s"), *HitResult.BoneName.ToString()));
     }
     else
     {

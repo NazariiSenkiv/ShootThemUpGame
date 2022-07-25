@@ -33,6 +33,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+    APlayerController* GetPlayerController() const;
+    bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
+    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+    FVector GetMuzzleLocation() const;
+    FVector GetMuzzleDirectionVector() const;
+    bool FindLineTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 private:
     void MakeShot();
 };

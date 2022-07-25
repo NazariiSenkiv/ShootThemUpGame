@@ -5,6 +5,7 @@
 
 #include "STUWeaponComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -144,6 +145,8 @@ void ASTUBaseCharacter::OnDeathHandle()
     GetCharacterMovement()->DisableMovement();
     bUseControllerRotationYaw = false;
 
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    
     SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)

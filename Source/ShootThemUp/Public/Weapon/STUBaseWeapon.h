@@ -12,11 +12,11 @@ class ASTUBaseCharacter;
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ASTUBaseWeapon();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    ASTUBaseWeapon();
 
     virtual void Fire();
 
@@ -29,9 +29,12 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Shoot")
     float TraceLength = 2000.0f;
-    
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+    float BulletDamage = 10.0f;
+
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
     APlayerController* GetPlayerController() const;
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
@@ -41,4 +44,5 @@ protected:
     bool FindLineTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 private:
     void MakeShot();
+    void CauseDamage(const FHitResult& HitResult);
 };

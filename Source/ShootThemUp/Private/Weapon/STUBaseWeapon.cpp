@@ -45,7 +45,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
     const auto* PlayerController = GetPlayerController();
     if (!PlayerController)
         return false;
-    
+
     PlayerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
     return true;
 }
@@ -77,7 +77,7 @@ bool ASTUBaseWeapon::FindLineTraceHit(FHitResult& HitResult, const FVector& Trac
     UWorld* World = GetWorld();
     if (!World)
         return false;
-    
+
     World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
     return true;
 }
@@ -91,7 +91,7 @@ void ASTUBaseWeapon::MakeShot()
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd))
         return;
-    
+
     const FVector MuzzleLocation = GetMuzzleLocation();
     const FVector MuzzleDirection = GetMuzzleDirectionVector();
 
@@ -111,6 +111,8 @@ void ASTUBaseWeapon::MakeShot()
             false, 5.0f, 0, 3.0f);
         DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 24, FColor::Yellow,
             false, 5.0f, 0, 3.0f);
+
+        CauseDamage(HitResult);
     }
     else
     {
@@ -119,3 +121,12 @@ void ASTUBaseWeapon::MakeShot()
     }
 }
 
+void ASTUBaseWeapon::CauseDamage(const FHitResult& HitResult)
+{
+    const AActor* Actor = HitResult.GetActor();
+    if (!Actor)
+        return;
+    
+    HitResult.GetActor()->TakeDamage(BulletDamage, FDamageEvent(),
+            GetPlayerController(), this);
+}

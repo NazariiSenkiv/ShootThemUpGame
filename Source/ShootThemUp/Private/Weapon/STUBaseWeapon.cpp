@@ -107,14 +107,14 @@ void ASTUBaseWeapon::MakeShot()
 
     if (HitResult.bBlockingHit && VectorProjection > 0.0)
     {
-        DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::Red,
+        DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::MakeRandomColor(),
             false, 5.0f, 0, 3.0f);
         DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 24, FColor::Yellow,
             false, 5.0f, 0, 3.0f);
     }
     else
     {
-        DrawDebugLine(World, MuzzleLocation, TraceEnd, FColor::Red,
+        DrawDebugLine(World, MuzzleLocation, TraceEnd, FColor::MakeRandomColor(),
             false, 5.0f, 0, 3.0f);
     }
 }

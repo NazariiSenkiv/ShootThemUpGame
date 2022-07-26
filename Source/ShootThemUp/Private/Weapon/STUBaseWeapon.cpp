@@ -3,7 +3,6 @@
 
 #include "Weapon/STUBaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
@@ -20,13 +19,10 @@ ASTUBaseWeapon::ASTUBaseWeapon()
 
 void ASTUBaseWeapon::StartFire()
 {
-    MakeShot();
-    GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ASTUBaseWeapon::MakeShot, ShotDelay, true);
 }
 
 void ASTUBaseWeapon::StopFire()
 {
-    GetWorldTimerManager().ClearTimer(ShootTimerHandle);
 }
 
 // Called when the game starts or when spawned
@@ -62,10 +58,7 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
         return false;
 
     TraceStart = ViewLocation;
-
-    const float DeflectionHalfRad = FMath::DegreesToRadians(DeflectionHalfAngle);
-    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), DeflectionHalfRad);
-    TraceEnd = ViewLocation + ShootDirection * TraceLength;
+    TraceEnd = ViewLocation + ViewRotation.Vector() * TraceLength;
     return true;
 }
 
@@ -91,41 +84,6 @@ bool ASTUBaseWeapon::FindLineTraceHit(FHitResult& HitResult, const FVector& Trac
 
 void ASTUBaseWeapon::MakeShot()
 {
-    UWorld* World = GetWorld();
-    if (!World)
-        return;
-
-    FVector TraceStart, TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd))
-        return;
-
-    const FVector MuzzleLocation = GetMuzzleLocation();
-    const FVector MuzzleDirection = GetMuzzleDirectionVector();
-
-    FHitResult HitResult;
-    if (!FindLineTraceHit(HitResult, TraceStart, TraceEnd))
-        return;
-
-    const FVector ShootDirection = HitResult.bBlockingHit
-                                       ? (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal()
-                                       : (TraceEnd - MuzzleLocation).GetSafeNormal();
-
-    const float VectorProjection = FVector::DotProduct(MuzzleDirection, ShootDirection);
-
-    if (HitResult.bBlockingHit && VectorProjection > 0.0)
-    {
-        DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::MakeRandomColor(),
-            false, 5.0f, 0, 3.0f);
-        DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 24, FColor::Yellow,
-            false, 5.0f, 0, 3.0f);
-
-        CauseDamage(HitResult);
-    }
-    else
-    {
-        DrawDebugLine(World, MuzzleLocation, TraceEnd, FColor::MakeRandomColor(),
-            false, 5.0f, 0, 3.0f);
-    }
 }
 
 void ASTUBaseWeapon::CauseDamage(const FHitResult& HitResult)
@@ -133,7 +91,7 @@ void ASTUBaseWeapon::CauseDamage(const FHitResult& HitResult)
     const AActor* Actor = HitResult.GetActor();
     if (!Actor)
         return;
-    
-    HitResult.GetActor()->TakeDamage(BulletDamage, FDamageEvent(),
-            GetPlayerController(), this);
+
+    HitResult.GetActor()->TakeDamage(BaseDamage, FDamageEvent(),
+        GetPlayerController(), this);
 }

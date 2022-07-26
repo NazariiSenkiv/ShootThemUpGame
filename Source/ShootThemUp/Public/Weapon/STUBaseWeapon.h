@@ -32,26 +32,19 @@ protected:
     float TraceLength = 2000.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-    float BulletDamage = 10.0f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
-    float ShotDelay = 0.2f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot", meta = (ClampMin = "0.0", ClampMax = "30.0"))
-    float DeflectionHalfAngle = 1.4f;
+    float BaseDamage = 10.0f;
     
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+    virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+
     APlayerController* GetPlayerController() const;
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
-    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     FVector GetMuzzleLocation() const;
     FVector GetMuzzleDirectionVector() const;
     bool FindLineTraceHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
-private:
-    void MakeShot();
-    void CauseDamage(const FHitResult& HitResult);
 
-    FTimerHandle ShootTimerHandle;
+    virtual void MakeShot();
+    void CauseDamage(const FHitResult& HitResult);
 };

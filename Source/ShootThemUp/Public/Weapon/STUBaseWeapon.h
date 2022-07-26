@@ -18,7 +18,8 @@ public:
     // Sets default values for this actor's properties
     ASTUBaseWeapon();
 
-    virtual void Fire();
+    virtual void StartFire();
+    virtual void StopFire();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
@@ -33,6 +34,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
     float BulletDamage = 10.0f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot")
+    float ShotDelay = 0.2f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shoot", meta = (ClampMin = "0.0", ClampMax = "30.0"))
+    float DeflectionHalfAngle = 1.4f;
+    
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -45,4 +52,6 @@ protected:
 private:
     void MakeShot();
     void CauseDamage(const FHitResult& HitResult);
+
+    FTimerHandle ShootTimerHandle;
 };

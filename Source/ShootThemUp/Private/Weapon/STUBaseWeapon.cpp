@@ -18,11 +18,15 @@ ASTUBaseWeapon::ASTUBaseWeapon()
     SetRootComponent(WeaponMeshComponent);
 }
 
-void ASTUBaseWeapon::Fire()
+void ASTUBaseWeapon::StartFire()
 {
-    UE_LOG(LogBaseWeapon, Display, TEXT("Piv-piv"));
-
     MakeShot();
+    GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &ASTUBaseWeapon::MakeShot, ShotDelay, true);
+}
+
+void ASTUBaseWeapon::StopFire()
+{
+    GetWorldTimerManager().ClearTimer(ShootTimerHandle);
 }
 
 // Called when the game starts or when spawned
@@ -58,7 +62,10 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
         return false;
 
     TraceStart = ViewLocation;
-    TraceEnd = ViewLocation + ViewRotation.Vector() * TraceLength;
+
+    const float DeflectionHalfRad = FMath::DegreesToRadians(DeflectionHalfAngle);
+    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), DeflectionHalfRad);
+    TraceEnd = ViewLocation + ShootDirection * TraceLength;
     return true;
 }
 

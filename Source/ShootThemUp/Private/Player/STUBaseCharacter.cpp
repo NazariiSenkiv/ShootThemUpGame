@@ -147,7 +147,7 @@ void ASTUBaseCharacter::OnDeathHandle()
     bUseControllerRotationYaw = false;
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-    
+
     SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)

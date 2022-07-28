@@ -16,7 +16,6 @@ class SHOOTTHEMUP_API ASTULauncherWeapon : public ASTUBaseWeapon
 
 public:
     virtual void StartFire() override;
-
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Shoot")
     TSubclassOf<ASTUProjectile> ProjectileClass;

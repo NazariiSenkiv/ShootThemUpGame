@@ -8,32 +8,46 @@
 #include "STUWeaponComponent.generated.h"
 
 class ASTUBaseWeapon;
+class USceneComponent;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
-	USTUWeaponComponent();
+public:
+    // Sets default values for this component's properties
+    USTUWeaponComponent();
 
     void StartFire();
     void StopFire();
-    
+
+    void NextWeapon();
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TSubclassOf<ASTUBaseWeapon> WeaponClass;
+    TArray<TSubclassOf<ASTUBaseWeapon>> WeaponClasses;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponSocketName = "WeaponSocket";
-    
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
-    void CreateWeapon();
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName ArmorySocketName = "WeaponArmorySocket";
+
+    // Called when the game starts
+    virtual void BeginPlay() override;
+
+    void SpawnWeapons();
 
 private:
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
+
+    UPROPERTY()
+    TArray<ASTUBaseWeapon*> Weapons;
+
+    int32 CurrentWeaponId = 0;
+
+    void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, const FName& SocketName);
+    void EquipWeapon(int32 WeaponId);
 };

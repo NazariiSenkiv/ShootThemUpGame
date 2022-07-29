@@ -95,3 +95,37 @@ void ASTUBaseWeapon::CauseDamage(const FHitResult& HitResult)
     HitResult.GetActor()->TakeDamage(BaseDamage, FDamageEvent(),
         GetPlayerController(), this);
 }
+
+void ASTUBaseWeapon::TraceShoot(FVector& ShootStart, FVector& ShootEnd, FHitResult& Hit)
+{
+    UWorld* World = GetWorld();
+    if (!World)
+        return;
+
+    FVector TraceStart, TraceEnd;
+    if (!GetTraceData(TraceStart, TraceEnd))
+        return;
+
+    ShootStart = GetMuzzleLocation();
+    const FVector MuzzleDirection = GetMuzzleDirectionVector();
+
+    if (!FindLineTraceHit(Hit, TraceStart, TraceEnd))
+        return;
+
+    const FVector ShootDirection = Hit.bBlockingHit
+                                       ? (Hit.ImpactPoint - ShootStart)
+                                       : (TraceEnd - ShootStart);
+
+    const float VectorProjection = FVector::DotProduct(MuzzleDirection, ShootDirection.GetSafeNormal());
+    float BulletDeviationAngle = FMath::RadiansToDegrees(FMath::Acos(VectorProjection));
+
+    if (BulletDeviationAngle <= MaxBulletDeviationAngle)
+    {
+        ShootEnd = ShootStart + ShootDirection;
+    }
+    else
+    {
+        ShootEnd = TraceEnd;
+        Hit = FHitResult();
+    }
+}

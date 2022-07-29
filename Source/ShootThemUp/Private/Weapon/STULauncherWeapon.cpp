@@ -16,18 +16,11 @@ void ASTULauncherWeapon::MakeShot()
     if (!World)
         return;
 
-    FVector TraceStart, TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd))
-        return;
+    FVector ShootStart, ShootEnd;
+    FHitResult Hit;
+    TraceShoot(ShootStart, ShootEnd, Hit);
 
-    FHitResult HitResult;
-    if (!FindLineTraceHit(HitResult, TraceStart, TraceEnd))
-        return;
-
-    const FVector MuzzleLocation = GetMuzzleLocation();
-    const FVector ShootDirection = HitResult.bBlockingHit
-                                       ? (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal()
-                                       : (TraceEnd - MuzzleLocation).GetSafeNormal();
+    FVector ShootDirection = (ShootEnd - ShootStart).GetSafeNormal();
 
     const FTransform SpawnTransform(FRotator::ZeroRotator, GetMuzzleLocation());
     ASTUProjectile* Projectile = World->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);

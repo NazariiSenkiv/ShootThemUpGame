@@ -149,6 +149,7 @@ void ASTUBaseCharacter::OnDeathHandle()
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
+    WeaponComponent->StopFire();
     SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)

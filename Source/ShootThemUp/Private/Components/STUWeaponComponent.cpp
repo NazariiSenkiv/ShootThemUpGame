@@ -42,6 +42,20 @@ void USTUWeaponComponent::BeginPlay()
     EquipWeapon(CurrentWeaponId);
 }
 
+void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    CurrentWeapon = nullptr;
+
+    for (auto* Weapon: Weapons)
+    {
+        Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        Weapon->Destroy();
+    }
+    Weapons.Empty();
+
+    Super::EndPlay(EndPlayReason);
+}
+
 void USTUWeaponComponent::SpawnWeapons()
 {
     UWorld* World = GetWorld();
@@ -83,6 +97,7 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponId)
     if (CurrentWeapon)
     {
         AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), ArmorySocketName);
+        CurrentWeapon->StopFire();
     }
     
     CurrentWeapon = Weapons[WeaponId];

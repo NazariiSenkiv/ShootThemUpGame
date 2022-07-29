@@ -38,35 +38,17 @@ void ASTURifleWeapon::MakeShot()
     if (!World)
         return;
 
-    FVector TraceStart, TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd))
-        return;
+    FVector ShootStart, ShootEnd;
+    FHitResult Hit;
+    TraceShoot(ShootStart, ShootEnd, Hit);
 
-    const FVector MuzzleLocation = GetMuzzleLocation();
-    const FVector MuzzleDirection = GetMuzzleDirectionVector();
-
-    FHitResult HitResult;
-    if (!FindLineTraceHit(HitResult, TraceStart, TraceEnd))
-        return;
-
-    const FVector ShootDirection = HitResult.bBlockingHit
-                                       ? (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal()
-                                       : (TraceEnd - MuzzleLocation).GetSafeNormal();
-
-    const float VectorProjection = FVector::DotProduct(MuzzleDirection, ShootDirection);
-
-    if (HitResult.bBlockingHit && VectorProjection > 0.0)
+    DrawDebugLine(World, ShootStart, ShootEnd, FColor::MakeRandomColor(),
+        false, 5.0f, 0, 3.0f);
+    if (Hit.bBlockingHit)
     {
-        DrawDebugLine(World, MuzzleLocation, HitResult.ImpactPoint, FColor::MakeRandomColor(),
-            false, 5.0f, 0, 3.0f);
-        DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 24, FColor::Yellow,
+        DrawDebugSphere(World, ShootEnd, 10.0f, 24, FColor::Yellow,
             false, 5.0f, 0, 3.0f);
 
-        CauseDamage(HitResult);
-    }
-    else
-    {
-        DrawDebugLine(World, MuzzleLocation, TraceEnd, FColor::MakeRandomColor(),
-            false, 5.0f, 0, 3.0f);
+        CauseDamage(Hit);
     }
 }

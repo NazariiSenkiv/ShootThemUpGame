@@ -33,6 +33,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
     float BaseDamage = 10.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Shoot")
+    float MaxBulletDeviationAngle = 30.0f;
     
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
@@ -47,4 +50,6 @@ protected:
 
     virtual void MakeShot();
     void CauseDamage(const FHitResult& HitResult);
+
+    void TraceShoot(FVector& ShootStart, FVector& ShootEnd, FHitResult& Hit);
 };

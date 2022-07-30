@@ -9,6 +9,7 @@
 
 class ASTUBaseWeapon;
 class USceneComponent;
+class UAnimMontage;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
@@ -34,6 +35,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName ArmorySocketName = "WeaponArmorySocket";
 
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UAnimMontage* EquipAnimMontage;
+
     // Called when the game starts
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -51,4 +55,9 @@ private:
 
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, const FName& SocketName);
     void EquipWeapon(int32 WeaponId);
+
+    void PlayCharacterAnimMontage(UAnimMontage* Anim);
+
+    void InitAnimations();
+    void OnEquipAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
 };

@@ -53,6 +53,8 @@ private:
 
     int32 CurrentWeaponId = 0;
 
+    bool IsEquipAnimInProgress = false;
+
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, const FName& SocketName);
     void EquipWeapon(int32 WeaponId);
 
@@ -60,4 +62,7 @@ private:
 
     void InitAnimations();
     void OnEquipAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
+
+    bool CanFire() const;
+    bool CanEquip() const;
 };

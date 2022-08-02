@@ -13,12 +13,16 @@ void ASTULauncherWeapon::StartFire()
 void ASTULauncherWeapon::MakeShot()
 {
     UWorld* World = GetWorld();
-    if (!World)
+    if (!World || IsAmmoEmpty())
+    {
+        StopFire();
         return;
+    }
 
     FVector ShootStart, ShootEnd;
     FHitResult Hit;
-    TraceShoot(ShootStart, ShootEnd, Hit);
+    if (!TraceShoot(ShootStart, ShootEnd, Hit))
+        return;
 
     FVector ShootDirection = (ShootEnd - ShootStart).GetSafeNormal();
 
@@ -31,4 +35,6 @@ void ASTULauncherWeapon::MakeShot()
     Projectile->SetMovementDirection(ShootDirection);
     Projectile->SetOwner(GetOwner());
     Projectile->FinishSpawning(SpawnTransform);
+
+    DecreaseAmmo();
 }

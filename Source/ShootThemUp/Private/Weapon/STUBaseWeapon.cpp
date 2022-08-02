@@ -29,6 +29,8 @@ void ASTUBaseWeapon::StopFire()
 void ASTUBaseWeapon::BeginPlay()
 {
     Super::BeginPlay();
+
+    CurrentAmmo = DefaultAmmo;
 }
 
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
@@ -96,21 +98,21 @@ void ASTUBaseWeapon::CauseDamage(const FHitResult& HitResult)
         GetPlayerController(), this);
 }
 
-void ASTUBaseWeapon::TraceShoot(FVector& ShootStart, FVector& ShootEnd, FHitResult& Hit)
+bool ASTUBaseWeapon::TraceShoot(FVector& ShootStart, FVector& ShootEnd, FHitResult& Hit)
 {
     UWorld* World = GetWorld();
     if (!World)
-        return;
+        return false;
 
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd))
-        return;
+        return false;
 
     ShootStart = GetMuzzleLocation();
     const FVector MuzzleDirection = GetMuzzleDirectionVector();
 
     if (!FindLineTraceHit(Hit, TraceStart, TraceEnd))
-        return;
+        return false;
 
     const FVector ShootDirection = Hit.bBlockingHit
                                        ? (Hit.ImpactPoint - ShootStart)
@@ -128,4 +130,47 @@ void ASTUBaseWeapon::TraceShoot(FVector& ShootStart, FVector& ShootEnd, FHitResu
         ShootEnd = TraceEnd;
         Hit = FHitResult();
     }
+
+    return true;
+}
+
+bool ASTUBaseWeapon::IsAmmoEmpty() const
+{
+    return !CurrentAmmo.IsAmmoInfinite && CurrentAmmo.ClipsCount == 0 && IsClipEmpty();
+}
+
+bool ASTUBaseWeapon::IsClipEmpty() const
+{
+    return CurrentAmmo.BulletsCount == 0;
+}
+
+void ASTUBaseWeapon::ChangeClip()
+{
+    if (!CurrentAmmo.IsAmmoInfinite)
+    {
+        --CurrentAmmo.ClipsCount;
+    }
+
+    CurrentAmmo.BulletsCount = DefaultAmmo.BulletsCount;
+
+    UE_LOG(LogBaseWeapon, Display, TEXT("=== Clip changed ==="));
+}
+
+void ASTUBaseWeapon::DecreaseAmmo()
+{
+    CurrentAmmo.BulletsCount--;
+    LogAmmo();
+
+    if (IsClipEmpty() && !IsAmmoEmpty())
+    {
+        ChangeClip();
+    }
+}
+
+void ASTUBaseWeapon::LogAmmo() const
+{
+    FString AmmoInfo = FString::Printf(TEXT("Ammo: %d / %s"), CurrentAmmo.BulletsCount,
+        CurrentAmmo.IsAmmoInfinite ? TEXT("Inf") : *FString::FromInt(CurrentAmmo.ClipsCount));
+
+    UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
 }

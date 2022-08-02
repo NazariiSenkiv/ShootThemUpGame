@@ -35,12 +35,20 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
 void ASTURifleWeapon::MakeShot()
 {
     UWorld* World = GetWorld();
-    if (!World)
+    if (!World || IsAmmoEmpty())
+    {
+        StopFire();
         return;
+    }
 
+    UE_LOG(LogTemp, Display, TEXT("Make Shot"));
+    
     FVector ShootStart, ShootEnd;
     FHitResult Hit;
-    TraceShoot(ShootStart, ShootEnd, Hit);
+    if (!TraceShoot(ShootStart, ShootEnd, Hit))
+    {
+        return;
+    }
 
     DrawDebugLine(World, ShootStart, ShootEnd, FColor::MakeRandomColor(),
         false, 5.0f, 0, 3.0f);
@@ -51,4 +59,6 @@ void ASTURifleWeapon::MakeShot()
 
         CauseDamage(Hit);
     }
+
+    DecreaseAmmo();
 }

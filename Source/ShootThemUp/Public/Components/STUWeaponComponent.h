@@ -58,6 +58,26 @@ protected:
 
     void SpawnWeapons();
 
+    template <typename T>
+    T* FindFirstNotifyByClass(UAnimSequenceBase* Anim)
+    {
+        if (!Anim)
+            return nullptr;
+
+        const auto AnimNotifyEvents = Anim->Notifies;
+
+        for (auto& AnimNotifyEvent : AnimNotifyEvents)
+        {
+            auto AnimNotify = Cast<T>(AnimNotifyEvent.Notify);
+
+            if (AnimNotify)
+            {
+                return AnimNotify;
+            }
+        }
+        return nullptr;
+    }
+    
 private:
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
@@ -71,15 +91,19 @@ private:
     int32 CurrentWeaponId = 0;
 
     bool IsEquipAnimInProgress = false;
+    bool IsReloadAnimInProgress = false;
 
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, const FName& SocketName);
     void EquipWeapon(int32 WeaponId);
 
     void PlayCharacterAnimMontage(UAnimMontage* Anim);
 
-    void InitAnimations();
+    void InitAnimationNotifies();
+    
     void OnEquipAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
+    void OnReloadAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
 
     bool CanFire() const;
     bool CanEquip() const;
+    bool CanReload() const;
 };

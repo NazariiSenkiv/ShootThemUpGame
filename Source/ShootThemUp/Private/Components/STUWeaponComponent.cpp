@@ -20,7 +20,7 @@ void USTUWeaponComponent::StartFire()
 {
     if (!CanFire())
         return;
-    
+
     CurrentWeapon->StartFire();
 }
 
@@ -38,6 +38,11 @@ void USTUWeaponComponent::NextWeapon()
 
     CurrentWeaponId = (CurrentWeaponId + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponId);
+}
+
+void USTUWeaponComponent::Reload()
+{
+    PlayCharacterAnimMontage(CurrentReloadAnimMontage);
 }
 
 // Called when the game starts
@@ -72,9 +77,9 @@ void USTUWeaponComponent::SpawnWeapons()
     if (!World || !Character)
         return;
 
-    for (auto WeaponClass : WeaponClasses)
+    for (auto WeaponData : WeaponsData)
     {
-        auto Weapon = World->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+        auto Weapon = World->SpawnActor<ASTUBaseWeapon>(WeaponData.WeaponClass);
 
         if (!Weapon)
             continue;
@@ -96,11 +101,15 @@ void USTUWeaponComponent::AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneCom
 
 void USTUWeaponComponent::EquipWeapon(int32 WeaponId)
 {
+    if (WeaponId < 0 || WeaponId >= Weapons.Num())
+    {
+        UE_LOG(LogWeaponComponent, Warning, TEXT("WeaponId out of range"));
+        return;
+    }
+
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character)
         return;
-
-    WeaponId = FMath::Clamp(WeaponId, 0, Weapons.Num() - 1);
 
     if (CurrentWeapon)
     {
@@ -109,6 +118,11 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponId)
     }
 
     CurrentWeapon = Weapons[WeaponId];
+    const auto CurrentWeaponData = WeaponsData.FindByPredicate([&](const FWeaponData& Data)
+    {
+        return Data.WeaponClass == CurrentWeapon->GetClass();
+    });
+    CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
 
     IsEquipAnimInProgress = true;
     PlayCharacterAnimMontage(EquipAnimMontage);

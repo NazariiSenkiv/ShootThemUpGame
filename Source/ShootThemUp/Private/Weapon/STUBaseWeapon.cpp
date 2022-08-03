@@ -30,6 +30,9 @@ void ASTUBaseWeapon::BeginPlay()
 {
     Super::BeginPlay();
 
+    checkf(DefaultAmmo.BulletsCount > 0, TEXT("Bullets count couldn't be <= 0"));
+    checkf(DefaultAmmo.ClipsCount >= 0, TEXT("Clips count couldn't be < 0"));
+    
     CurrentAmmo = DefaultAmmo;
 }
 

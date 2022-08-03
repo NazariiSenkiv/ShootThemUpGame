@@ -5,23 +5,12 @@
 #include "CoreMinimal.h"
 #include "STUBaseCharacter.h"
 #include "Components/ActorComponent.h"
+#include "STUCoreTypes.h"
 #include "STUWeaponComponent.generated.h"
 
 class ASTUBaseWeapon;
 class USceneComponent;
 class UAnimMontage;
-
-USTRUCT(BlueprintType)
-struct FWeaponData
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TSubclassOf<ASTUBaseWeapon> WeaponClass;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    UAnimMontage* ReloadAnimMontage;
-};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
@@ -57,26 +46,6 @@ protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     void SpawnWeapons();
-
-    template <typename T>
-    T* FindFirstNotifyByClass(UAnimSequenceBase* Anim)
-    {
-        if (!Anim)
-            return nullptr;
-
-        const auto AnimNotifyEvents = Anim->Notifies;
-
-        for (auto& AnimNotifyEvent : AnimNotifyEvents)
-        {
-            auto AnimNotify = Cast<T>(AnimNotifyEvent.Notify);
-
-            if (AnimNotify)
-            {
-                return AnimNotify;
-            }
-        }
-        return nullptr;
-    }
     
 private:
     UPROPERTY()

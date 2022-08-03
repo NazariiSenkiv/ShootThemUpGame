@@ -4,6 +4,7 @@
 #include "Components/STUHealthComponent.h"
 #include "GameFramework/Actor.h"
 #include "TimerManager.h"
+#include "Microsoft/AllowMicrosoftPlatformTypes.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 

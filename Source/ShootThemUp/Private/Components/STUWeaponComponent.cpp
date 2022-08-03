@@ -7,8 +7,11 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "Animations/STUEquipFinishedAnimNotify.h"
 #include "Animations/STUReloadFinishedAnimNotify.h"
+#include "Animations/AnimUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
+
+static constexpr int32 WeaponCount = 2;
 
 // Sets default values for this component's properties
 USTUWeaponComponent::USTUWeaponComponent()
@@ -49,6 +52,8 @@ void USTUWeaponComponent::Reload()
 void USTUWeaponComponent::BeginPlay()
 {
     Super::BeginPlay();
+
+    checkf(WeaponsData.Num() <= 2, TEXT("Weapons count couldn't be greater than %d"), WeaponCount);
 
     SpawnWeapons();
     InitAnimationNotifies();
@@ -142,19 +147,27 @@ void USTUWeaponComponent::PlayCharacterAnimMontage(UAnimMontage* Anim)
 
 void USTUWeaponComponent::InitAnimationNotifies()
 {
-    const auto EquipFinishedNotify = FindFirstNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
+    USTUEquipFinishedAnimNotify* EquipFinishedNotify = AnimUtils::FindFirstNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
 
     if (EquipFinishedNotify)
     {
         EquipFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnEquipAnimFinishedHandle);
     }
+    else
+    {
+        UE_LOG(LogWeaponComponent, Error, TEXT("Can't find EquipFinishedAnimNotify"));
+        checkNoEntry();
+    }
 
     for (FWeaponData& WeaponData : WeaponsData)
     {
-        const auto ReloadFinishedNotify = FindFirstNotifyByClass<USTUReloadFinishedAnimNotify>(WeaponData.ReloadAnimMontage);
+        const auto ReloadFinishedNotify = AnimUtils::FindFirstNotifyByClass<USTUReloadFinishedAnimNotify>(WeaponData.ReloadAnimMontage);
 
         if (!ReloadFinishedNotify)
-            continue;
+        {
+            UE_LOG(LogWeaponComponent, Error, TEXT("Can't find ReloadFinishedNotify"));
+            checkNoEntry();
+        }
 
         ReloadFinishedNotify->OnNotified.AddUObject(this, &USTUWeaponComponent::OnReloadAnimFinishedHandle);
     }
@@ -196,7 +209,7 @@ void USTUWeaponComponent::ChangeClip()
 
     CurrentWeapon->StopFire();
     CurrentWeapon->ChangeClip();
-    
+
     IsReloadAnimInProgress = true;
     PlayCharacterAnimMontage(CurrentReloadAnimMontage);
 }

@@ -148,6 +148,12 @@ void ASTUBaseWeapon::ChangeClip()
 {
     if (!CurrentAmmo.IsAmmoInfinite)
     {
+        if (CurrentAmmo.ClipsCount == 0)
+        {
+            UE_LOG(LogBaseWeapon, Warning, TEXT("No Clips?"));
+            return;
+        }
+        
         --CurrentAmmo.ClipsCount;
     }
 
@@ -156,14 +162,26 @@ void ASTUBaseWeapon::ChangeClip()
     UE_LOG(LogBaseWeapon, Display, TEXT("=== Clip changed ==="));
 }
 
+bool ASTUBaseWeapon::CanReload() const
+{
+    return CurrentAmmo.BulletsCount < DefaultAmmo.BulletsCount && CurrentAmmo.ClipsCount > 0;
+}
+
 void ASTUBaseWeapon::DecreaseAmmo()
 {
+    if (CurrentAmmo.BulletsCount == 0)
+    {
+        UE_LOG(LogBaseWeapon, Warning, TEXT("No Bullets?"));
+        return;
+    }
+    
     CurrentAmmo.BulletsCount--;
     LogAmmo();
 
     if (IsClipEmpty() && !IsAmmoEmpty())
     {
-        ChangeClip();
+        
+        OnClipEmpty.Broadcast();
     }
 }
 

@@ -103,6 +103,9 @@ private:
     void OnEquipAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
     void OnReloadAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
 
+    void OnClipEmptyHandle();
+    void ChangeClip();
+    
     bool CanFire() const;
     bool CanEquip() const;
     bool CanReload() const;

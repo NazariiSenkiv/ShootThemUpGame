@@ -5,7 +5,6 @@
 
 #include "GameFramework/Character.h"
 #include "Weapon/STUBaseWeapon.h"
-#include "GameFramework/Character.h"
 #include "Animations/STUEquipFinishedAnimNotify.h"
 #include "Animations/STUReloadFinishedAnimNotify.h"
 
@@ -43,11 +42,7 @@ void USTUWeaponComponent::NextWeapon()
 
 void USTUWeaponComponent::Reload()
 {
-    if (!CanReload())
-        return;
-
-    IsReloadAnimInProgress = true;
-    PlayCharacterAnimMontage(CurrentReloadAnimMontage);
+    ChangeClip();
 }
 
 // Called when the game starts
@@ -90,6 +85,7 @@ void USTUWeaponComponent::SpawnWeapons()
             continue;
 
         Weapons.Add(Weapon);
+        Weapon->OnClipEmpty.AddUObject(this, &USTUWeaponComponent::OnClipEmptyHandle);
         Weapon->SetOwner(Character);
         AttachWeaponToSocket(Weapon, Character->GetMesh(), ArmorySocketName);
     }
@@ -188,6 +184,23 @@ void USTUWeaponComponent::OnReloadAnimFinishedHandle(USkeletalMeshComponent* Ske
     }
 }
 
+void USTUWeaponComponent::OnClipEmptyHandle()
+{
+    ChangeClip();
+}
+
+void USTUWeaponComponent::ChangeClip()
+{
+    if (!CanReload())
+        return;
+
+    CurrentWeapon->StopFire();
+    CurrentWeapon->ChangeClip();
+    
+    IsReloadAnimInProgress = true;
+    PlayCharacterAnimMontage(CurrentReloadAnimMontage);
+}
+
 bool USTUWeaponComponent::CanFire() const
 {
     return CurrentWeapon && !IsEquipAnimInProgress && !IsReloadAnimInProgress;
@@ -200,5 +213,8 @@ bool USTUWeaponComponent::CanEquip() const
 
 bool USTUWeaponComponent::CanReload() const
 {
-    return CurrentWeapon && !IsEquipAnimInProgress && !IsReloadAnimInProgress;
+    return CurrentWeapon
+           && !IsEquipAnimInProgress
+           && !IsReloadAnimInProgress
+           && CurrentWeapon->CanReload();
 }

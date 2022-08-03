@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "STUBaseWeapon.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
+
 class USkeletalMeshComponent;
 class ASTUBaseCharacter;
 
@@ -33,9 +35,14 @@ public:
     // Sets default values for this actor's properties
     ASTUBaseWeapon();
 
+    FOnClipEmptySignature OnClipEmpty;
+    
     virtual void StartFire();
     virtual void StopFire();
 
+    void ChangeClip();
+    bool CanReload() const;
+    
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
     USkeletalMeshComponent* WeaponMeshComponent;
@@ -74,7 +81,6 @@ protected:
     bool IsAmmoEmpty() const;
     bool IsClipEmpty() const;
 
-    void ChangeClip();
     void DecreaseAmmo();
 
     void LogAmmo() const;

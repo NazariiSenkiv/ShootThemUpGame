@@ -23,7 +23,10 @@ public:
     bool IsDead() { return FMath::IsNearlyZero(Health); }
 
     float GetHealth() const { return Health; }
-    
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    float GetHealthPercent() const { return Health / MaxHealth; }
+
     void Heal(float HealAmount);
 protected:
     // Called when the game starts

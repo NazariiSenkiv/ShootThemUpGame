@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "STUCoreTypes.h"
+
 #include "STUBaseWeapon.generated.h"
 
 class USkeletalMeshComponent;
@@ -20,13 +21,15 @@ public:
     ASTUBaseWeapon();
 
     FOnClipEmptySignature OnClipEmpty;
-    
+
     virtual void StartFire();
     virtual void StopFire();
 
     void ChangeClip();
     bool CanReload() const;
-    
+
+    FWeaponUIData GetUIData() const { return UIData; }
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
     USkeletalMeshComponent* WeaponMeshComponent;
@@ -44,8 +47,11 @@ protected:
     float MaxBulletDeviationAngle = 30.0f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    FAmmoData DefaultAmmo {15, 10, false};
-    
+    FAmmoData DefaultAmmo{15, 10, false};
+
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    FWeaponUIData UIData;
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -68,7 +74,7 @@ protected:
     void DecreaseAmmo();
 
     void LogAmmo() const;
-    
+
 private:
     FAmmoData CurrentAmmo;
 };

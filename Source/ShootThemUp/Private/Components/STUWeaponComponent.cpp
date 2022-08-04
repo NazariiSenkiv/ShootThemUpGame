@@ -48,6 +48,15 @@ void USTUWeaponComponent::Reload()
     ChangeClip();
 }
 
+bool USTUWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& UIData)
+{
+    if (!CurrentWeapon)
+        return false;
+
+    UIData = CurrentWeapon->GetUIData();
+    return true;
+}
+
 // Called when the game starts
 void USTUWeaponComponent::BeginPlay()
 {

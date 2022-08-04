@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "STUCoreTypes.h"
+
 #include "STUPlayerHUDWidget.generated.h"
 
 UCLASS()
@@ -17,4 +19,7 @@ protected:
 
     UFUNCTION(BlueprintCallable, Category = "UI")
     FLinearColor GetHealthBarColor() const;
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
 };

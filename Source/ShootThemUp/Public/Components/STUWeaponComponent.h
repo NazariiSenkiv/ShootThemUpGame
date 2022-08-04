@@ -28,6 +28,8 @@ public:
 
     void Reload();
 
+    bool GetCurrentWeaponUIData(FWeaponUIData& UIData);
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     TArray<FWeaponData> WeaponsData;

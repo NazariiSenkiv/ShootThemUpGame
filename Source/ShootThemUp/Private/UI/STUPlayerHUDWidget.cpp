@@ -3,6 +3,7 @@
 
 #include "UI/STUPlayerHUDWidget.h"
 #include "Components/STUHealthComponent.h"
+#include "Components/STUWeaponComponent.h"
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {    
@@ -25,4 +26,18 @@ FLinearColor USTUPlayerHUDWidget::GetHealthBarColor() const
     float HealthPercent = GetHealthPercent();
 
     return FLinearColor(1-HealthPercent, HealthPercent, 0);
+}
+
+bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
+{
+    const auto PlayerPawn = GetOwningPlayerPawn();
+    if (!PlayerPawn)
+        return false;
+
+    const auto Controller = PlayerPawn->GetComponentByClass(USTUWeaponComponent::StaticClass());
+    const auto WeaponComponent = Cast<USTUWeaponComponent>(Controller);
+    if (!WeaponComponent)
+        return false;
+    
+    return WeaponComponent->GetCurrentWeaponUIData(UIData);
 }

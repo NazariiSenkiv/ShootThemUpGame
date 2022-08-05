@@ -6,38 +6,35 @@
 #include "Components/STUWeaponComponent.h"
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
-{    
-    const auto Player = GetOwningPlayerPawn();
-
-    if (!Player)
-        return 0.0f;
-
-    const auto Component = Player->GetComponentByClass(USTUHealthComponent::StaticClass());
-    const auto HealthComponent = Cast<USTUHealthComponent>(Component);
-
+{
+    const auto HealthComponent = GetOwningPlayerComponent<USTUHealthComponent>();
     if (!HealthComponent)
         return 0.0f;
-    
-    return  HealthComponent->GetHealthPercent();
+
+    return HealthComponent->GetHealthPercent();
 }
 
 FLinearColor USTUPlayerHUDWidget::GetHealthBarColor() const
 {
     float HealthPercent = GetHealthPercent();
 
-    return FLinearColor(1-HealthPercent, HealthPercent, 0);
+    return FLinearColor(1 - HealthPercent, HealthPercent, 0);
 }
 
 bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
 {
-    const auto PlayerPawn = GetOwningPlayerPawn();
-    if (!PlayerPawn)
-        return false;
-
-    const auto Controller = PlayerPawn->GetComponentByClass(USTUWeaponComponent::StaticClass());
-    const auto WeaponComponent = Cast<USTUWeaponComponent>(Controller);
+    const auto WeaponComponent = GetOwningPlayerComponent<USTUWeaponComponent>();
     if (!WeaponComponent)
         return false;
-    
+
     return WeaponComponent->GetCurrentWeaponUIData(UIData);
+}
+
+bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
+{
+    const auto WeaponComponent = GetOwningPlayerComponent<USTUWeaponComponent>();
+    if (!WeaponComponent)
+        return false;
+
+    return WeaponComponent->GetCurrentAmmoData(AmmoData);
 }

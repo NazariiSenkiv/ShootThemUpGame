@@ -4,10 +4,11 @@
 #include "UI/STUPlayerHUDWidget.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/STUWeaponComponent.h"
+#include "STUUtils.h"
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
 {
-    const auto HealthComponent = GetOwningPlayerComponent<USTUHealthComponent>();
+    const auto HealthComponent = STUUtils::GetPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
     if (!HealthComponent)
         return 0.0f;
 
@@ -23,7 +24,7 @@ FLinearColor USTUPlayerHUDWidget::GetHealthBarColor() const
 
 bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
 {
-    const auto WeaponComponent = GetOwningPlayerComponent<USTUWeaponComponent>();
+    const auto WeaponComponent = STUUtils::GetPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
     if (!WeaponComponent)
         return false;
 
@@ -32,7 +33,7 @@ bool USTUPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
 
 bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
 {
-    const auto WeaponComponent = GetOwningPlayerComponent<USTUWeaponComponent>();
+    const auto WeaponComponent = STUUtils::GetPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
     if (!WeaponComponent)
         return false;
 
@@ -41,7 +42,7 @@ bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
 
 bool USTUPlayerHUDWidget::IsPlayerAlive() const
 {
-    const auto HealthComponent = GetOwningPlayerComponent<USTUHealthComponent>();
+    const auto HealthComponent = STUUtils::GetPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
     return HealthComponent && !HealthComponent->IsDead();
 }
 

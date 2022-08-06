@@ -179,7 +179,7 @@ void ASTUBaseWeapon::DecreaseAmmo()
     }
     
     CurrentAmmo.BulletsCount--;
-    LogAmmo();
+    //LogAmmo();
 
     if (IsClipEmpty() && !IsAmmoEmpty())
     {

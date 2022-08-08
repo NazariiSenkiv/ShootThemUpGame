@@ -6,6 +6,7 @@
 #include "STUBaseCharacter.h"
 #include "Components/ActorComponent.h"
 #include "STUCoreTypes.h"
+
 #include "STUWeaponComponent.generated.h"
 
 class ASTUBaseWeapon;
@@ -30,6 +31,8 @@ public:
 
     bool GetCurrentWeaponUIData(FWeaponUIData& UIData);
     bool GetCurrentAmmoData(FAmmoData& AmmoData);
+
+    bool TryAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 ClipsCount);
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -75,7 +78,7 @@ private:
     void OnEquipAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
     void OnReloadAnimFinishedHandle(USkeletalMeshComponent* SkeletalMesh);
 
-    void OnClipEmptyHandle();
+    void OnClipEmptyHandle(ASTUBaseWeapon* EmptyWeapon);
     void ChangeClip();
     
     bool CanFire() const;

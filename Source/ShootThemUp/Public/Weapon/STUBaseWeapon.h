@@ -31,6 +31,8 @@ public:
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
+    bool TryAddAmmo(int32 ClipsCount);
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Mesh")
     USkeletalMeshComponent* WeaponMeshComponent;
@@ -75,6 +77,12 @@ protected:
     void DecreaseAmmo();
 
     void LogAmmo() const;
+
+    bool IsAmmoFull() const
+    {
+        return CurrentAmmo.BulletsCount == DefaultAmmo.BulletsCount
+               && CurrentAmmo.ClipsCount == DefaultAmmo.ClipsCount;
+    }
 
 private:
     FAmmoData CurrentAmmo;

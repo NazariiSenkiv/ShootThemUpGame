@@ -66,6 +66,19 @@ bool USTUWeaponComponent::GetCurrentAmmoData(FAmmoData& AmmoData)
     return true;
 }
 
+bool USTUWeaponComponent::TryAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 ClipsCount)
+{
+    for (const auto Weapon : Weapons)
+    {
+        if (Weapon && Weapon->IsA(WeaponClass))
+        {
+            return Weapon->TryAddAmmo(ClipsCount);
+        }
+    }
+
+    return false;
+}
+
 // Called when the game starts
 void USTUWeaponComponent::BeginPlay()
 {
@@ -215,9 +228,22 @@ void USTUWeaponComponent::OnReloadAnimFinishedHandle(USkeletalMeshComponent* Ske
     }
 }
 
-void USTUWeaponComponent::OnClipEmptyHandle()
+void USTUWeaponComponent::OnClipEmptyHandle(ASTUBaseWeapon* EmptyWeapon)
 {
-    ChangeClip();
+    if (EmptyWeapon == CurrentWeapon)
+    {
+        ChangeClip();
+    }
+    else
+    {
+        for (auto Weapon : Weapons)
+        {
+            if (Weapon == EmptyWeapon)
+            {
+                Weapon->ChangeClip();
+            }
+        }
+    }
 }
 
 void USTUWeaponComponent::ChangeClip()

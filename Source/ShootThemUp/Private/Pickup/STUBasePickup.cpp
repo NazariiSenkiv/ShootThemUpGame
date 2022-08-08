@@ -32,6 +32,8 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
     Super::NotifyActorBeginOverlap(OtherActor);
 
     APawn* OtherPawn = Cast<APawn>(OtherActor);
+    if (!OtherPawn)
+        return;
     
     if (GiveTo(OtherPawn))
     {

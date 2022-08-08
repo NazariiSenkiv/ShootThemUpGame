@@ -7,6 +7,7 @@
 #include "STUBasePickup.generated.h"
 
 class USphereComponent;
+class APawn;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBasePickup : public AActor
@@ -21,14 +22,18 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Collision")
     USphereComponent* SphereCollisionComponent;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Pickup")
+    float RespawnTime = 5.0f;
     
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+private:
+    virtual bool GiveTo(APawn* PlayerPawn);
+    
+    void PickupWasTaken();
+    void Respawn();
 };

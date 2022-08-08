@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All);
 ASTUBasePickup::ASTUBasePickup()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
     SphereCollisionComponent = CreateDefaultSubobject<USphereComponent>("CollisionSphere");
     SphereCollisionComponent->InitSphereRadius(50.0f);
@@ -23,22 +23,47 @@ ASTUBasePickup::ASTUBasePickup()
 void ASTUBasePickup::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+    check(SphereCollisionComponent);
 }
 
 void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
 
-    UE_LOG(LogBasePickup, Display, TEXT("Picked by %s"), *(OtherActor->GetName()));
-
-    Destroy();
+    APawn* OtherPawn = Cast<APawn>(OtherActor);
+    
+    if (GiveTo(OtherPawn))
+    {
+        PickupWasTaken();
+    }
 }
 
-// Called every frame
-void ASTUBasePickup::Tick(float DeltaTime)
+bool ASTUBasePickup::GiveTo(APawn* PlayerPawn)
 {
-	Super::Tick(DeltaTime);
+    return false;
+}
 
+void ASTUBasePickup::PickupWasTaken()
+{
+    SphereCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+    if (GetRootComponent())
+    {
+        GetRootComponent()->SetVisibility(false, true);
+    }
+
+    FTimerHandle RespawnTimerHandle;
+    GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
+}
+
+void ASTUBasePickup::Respawn()
+{
+    SphereCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+    if (GetRootComponent())
+    {
+        GetRootComponent()->SetVisibility(true, true);
+    }
 }
 

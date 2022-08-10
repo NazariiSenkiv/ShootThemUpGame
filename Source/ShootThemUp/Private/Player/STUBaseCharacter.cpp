@@ -38,6 +38,8 @@ ASTUBaseCharacter::ASTUBaseCharacter()
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChangedHandle);
 
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
+
+    CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
 }
 
 // Called when the game starts or when spawned
@@ -49,8 +51,7 @@ void ASTUBaseCharacter::BeginPlay()
     check(HealthTextComponent);
 
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeathHandle);
-
-    CameraDistanceSensitivity = CameraMaxDistance / 2.0f;
+    
     DefaultMaxSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnLandedHandle);
@@ -115,13 +116,10 @@ void ASTUBaseCharacter::MoveRight(float Axis)
 
 void ASTUBaseCharacter::MoveCameraAway(float Axis)
 {
-    float NewSpringArmLength = SpringArmComponent->TargetArmLength +
-                               Axis * CameraDistanceSensitivity * GetWorld()->DeltaTimeSeconds;
-
-    if (NewSpringArmLength < CameraMaxDistance && NewSpringArmLength > CameraMinDistance)
-    {
-        SpringArmComponent->TargetArmLength = NewSpringArmLength;
-    }
+    float ChangeValue = Axis * CameraDistanceSensitivity * GetWorld()->GetDeltaSeconds();
+    float NewSpringArmLength = SpringArmComponent->TargetArmLength + ChangeValue;
+    
+    SpringArmComponent->TargetArmLength = FMath::Clamp(NewSpringArmLength, CameraMinDistance, CameraMaxDistance);
 }
 
 void ASTUBaseCharacter::StartRunning()

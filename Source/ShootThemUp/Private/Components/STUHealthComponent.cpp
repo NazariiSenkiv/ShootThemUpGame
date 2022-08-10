@@ -36,6 +36,15 @@ void USTUHealthComponent::Heal(float HealAmount)
     SetHealth(Health + HealAmount);
 }
 
+bool USTUHealthComponent::TryHeal(float HealAmount)
+{
+    if (HealAmount < 0 || IsHealthFull() || IsDead())
+        return false;
+
+    Heal(HealAmount);
+    return true;
+}
+
 void USTUHealthComponent::AutoHeal()
 {
     if (bAutoHealEnabled)

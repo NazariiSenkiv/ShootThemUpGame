@@ -28,6 +28,9 @@ public:
     float GetHealthPercent() const { return Health / MaxHealth; }
 
     void Heal(float HealAmount);
+    bool TryHeal(float HealAmount);
+
+    bool IsHealthFull() const { return FMath::IsNearlyEqual(Health, MaxHealth); }
 protected:
     // Called when the game starts
     virtual void BeginPlay() override;

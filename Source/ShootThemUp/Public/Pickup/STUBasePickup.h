@@ -17,6 +17,7 @@ class SHOOTTHEMUP_API ASTUBasePickup : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ASTUBasePickup();
+    virtual void Tick(float DeltaSeconds) override;
 
 protected:
 
@@ -28,12 +29,16 @@ protected:
     
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+    
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
 private:
+    float RotationYaw;
+    
     virtual bool GiveTo(APawn* PlayerPawn);
     
     void PickupWasTaken();
     void Respawn();
+
+    void GenerateRotationYaw();
 };

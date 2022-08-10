@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All);
 ASTUBasePickup::ASTUBasePickup()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
     SphereCollisionComponent = CreateDefaultSubobject<USphereComponent>("CollisionSphere");
     SphereCollisionComponent->InitSphereRadius(50.0f);
@@ -25,6 +25,15 @@ void ASTUBasePickup::BeginPlay()
 	Super::BeginPlay();
 
     check(SphereCollisionComponent);
+
+    GenerateRotationYaw();
+}
+
+void ASTUBasePickup::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    AddActorLocalRotation(FRotator(0.0f, RotationYaw * DeltaSeconds, 0.0f));
 }
 
 void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -61,11 +70,19 @@ void ASTUBasePickup::PickupWasTaken()
 
 void ASTUBasePickup::Respawn()
 {
+    GenerateRotationYaw();
+    
     SphereCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
     if (GetRootComponent())
     {
         GetRootComponent()->SetVisibility(true, true);
     }
+}
+
+void ASTUBasePickup::GenerateRotationYaw()
+{
+    const float Direction = FMath::RandBool() ? 1.0f : -1.0f;
+    RotationYaw = FMath::RandRange(60.0f, 120.0f) * Direction;
 }
 

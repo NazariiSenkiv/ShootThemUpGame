@@ -9,6 +9,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class USTUWeaponFXComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUProjectile : public AActor
@@ -38,6 +39,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Shoot")
     float LifeSeconds = 5.0f;
+
+    UPROPERTY(VisibleAnywhere, Category = "VFX")
+    USTUWeaponFXComponent* FXComponent;
 
     virtual void BeginPlay() override;
 
